@@ -170,19 +170,18 @@ public class RegistryService {
             for (int i = 0; i < dss.size(); i++) {
                 for (int j = 0; j < dss.get(i).getDataStructureComponents().getDimensionList().size(); j++) {
                     DimensionType dim = dss.get(i).getDataStructureComponents().getDimensionList().getDimension(j);
-                    System.out.println("Dimension:"+dim.getId().toString());
                     ConceptReference cref = dim.getConceptIdentity();
                     ConceptSchemeReference csref = cref.toConceptSchemeReference();
                     ConceptSchemeType cscheme = null;
                     ConceptType ct = SdmxGatewayApplication.getApplication().getRegistry().find(cref);
                     if (cs.find(csref) != null) {
                         cscheme = cs.find(csref);
-                        cscheme.addConcept(ct);
+                        if(ct!=null){cscheme.addConcept(ct);}
                     } else {
                         cscheme = SdmxGatewayApplication.getApplication().getRegistry().find(csref);
                         cs.getConceptSchemes().add(cscheme);
                         cscheme.setItems(new ArrayList<ItemType>());
-                        cscheme.addConcept(ct);
+                        if(ct!=null){cscheme.addConcept(ct);}
                     }
                     if (dim.getLocalRepresentation().getEnumeration() != null) {
                         CodelistType cl = (CodelistType) SdmxGatewayApplication.getApplication().getRegistry().find(dim.getLocalRepresentation().getEnumeration());
@@ -191,19 +190,18 @@ public class RegistryService {
                 }
                 if (dss.get(i).getDataStructureComponents().getDimensionList().getMeasureDimension() != null) {
                     MeasureDimensionType dim = dss.get(i).getDataStructureComponents().getDimensionList().getMeasureDimension();
-                    System.out.println("MeasureDimension:"+dim.getId().toString());
                     ConceptReference cref = dim.getConceptIdentity();
                     ConceptSchemeReference csref = cref.toConceptSchemeReference();
                     ConceptSchemeType cscheme = null;
                     ConceptType ct = SdmxGatewayApplication.getApplication().getRegistry().find(cref);
                     if (cs.find(csref) != null) {
                         cscheme = cs.find(csref);
-                        cscheme.addConcept(ct);
+                        if(ct!=null){cscheme.addConcept(ct);}
                     } else {
                         cscheme = SdmxGatewayApplication.getApplication().getRegistry().find(csref);
                         cs.getConceptSchemes().add(cscheme);
                         cscheme.setItems(new ArrayList<ItemType>());
-                        cscheme.addConcept(ct);
+                        if(ct!=null){cscheme.addConcept(ct);}
                     }
                     if (dim.getLocalRepresentation().getEnumeration() != null) {
                         CodelistType cl = (CodelistType) SdmxGatewayApplication.getApplication().getRegistry().find(dim.getLocalRepresentation().getEnumeration());
@@ -212,19 +210,18 @@ public class RegistryService {
                 }
                 if (dss.get(i).getDataStructureComponents().getDimensionList().getTimeDimension() != null) {
                     TimeDimensionType dim = dss.get(i).getDataStructureComponents().getDimensionList().getTimeDimension();
-                    System.out.println("TimeDimension:"+dim.getId().toString());
                     ConceptReference cref = dim.getConceptIdentity();
                     ConceptSchemeReference csref = cref.toConceptSchemeReference();
                     ConceptSchemeType cscheme = null;
                     ConceptType ct = SdmxGatewayApplication.getApplication().getRegistry().find(cref);
                     if (cs.find(csref) != null) {
                         cscheme = cs.find(csref);
-                        cscheme.addConcept(ct);
+                        if(ct!=null){cscheme.addConcept(ct);}
                     } else {
                         cscheme = SdmxGatewayApplication.getApplication().getRegistry().find(csref);
                         cs.getConceptSchemes().add(cscheme);
                         cscheme.setItems(new ArrayList<ItemType>());
-                        cscheme.addConcept(ct);
+                        if(ct!=null){cscheme.addConcept(ct);}
                     }
                     if (dim.getLocalRepresentation().getEnumeration() != null) {
                         CodelistType cl = (CodelistType) SdmxGatewayApplication.getApplication().getRegistry().find(dim.getLocalRepresentation().getEnumeration());
@@ -234,19 +231,18 @@ public class RegistryService {
 
                 for (int j = 0; j < dss.get(i).getDataStructureComponents().getAttributeList().size(); j++) {
                     AttributeType dim = dss.get(i).getDataStructureComponents().getAttributeList().getAttribute(j);
-                    System.out.println("Attribute:"+dim.getId().toString());
                     ConceptReference cref = dim.getConceptIdentity();
                     ConceptSchemeReference csref = cref.toConceptSchemeReference();
                     ConceptSchemeType cscheme = null;
                     ConceptType ct = SdmxGatewayApplication.getApplication().getRegistry().find(cref);
                     if (cs.find(csref) != null) {
                         cscheme = cs.find(csref);
-                        cscheme.addConcept(ct);
+                        if(ct!=null){cscheme.addConcept(ct);}
                     } else {
                         cscheme = SdmxGatewayApplication.getApplication().getRegistry().find(csref);
                         cs.getConceptSchemes().add(cscheme);
                         cscheme.setItems(new ArrayList<ItemType>());
-                        cscheme.addConcept(ct);
+                        if(ct!=null){cscheme.addConcept(ct);}
                     }
                     if (dim.getLocalRepresentation().getEnumeration() != null) {
                         CodelistType cl = (CodelistType) SdmxGatewayApplication.getApplication().getRegistry().find(dim.getLocalRepresentation().getEnumeration());
@@ -254,19 +250,18 @@ public class RegistryService {
                     }
                 }
                 PrimaryMeasure dim = dss.get(i).getDataStructureComponents().getMeasureList().getPrimaryMeasure();
-                System.out.println("PrimaryMeasure:"+dim.getId().toString());
                 ConceptReference cref = dim.getConceptIdentity();
                 ConceptSchemeReference csref = cref.toConceptSchemeReference();
                 ConceptSchemeType cscheme = null;
                 ConceptType ct = SdmxGatewayApplication.getApplication().getRegistry().find(cref);
                 if (cs.find(csref) != null) {
                     cscheme = cs.find(csref);
-                    cscheme.addConcept(ct);
+                    if(ct!=null){cscheme.addConcept(ct);}
                 } else {
                     cscheme = SdmxGatewayApplication.getApplication().getRegistry().find(csref);
                     cs.getConceptSchemes().add(cscheme);
                     cscheme.setItems(new ArrayList<ItemType>());
-                    cscheme.addConcept(ct);
+                    if(ct!=null){cscheme.addConcept(ct);}
                 }
                 if (dim.getLocalRepresentation().getEnumeration() != null) {
                     CodelistType cl = (CodelistType) SdmxGatewayApplication.getApplication().getRegistry().find(dim.getLocalRepresentation().getEnumeration());
@@ -291,6 +286,7 @@ public class RegistryService {
                 ParseParams params = new ParseParams();
                 SdmxIO.writeStructure("application/vnd.sdmx.structure+xml;version=2.1", struct, output);
             } catch (Exception e) {
+                e.printStackTrace();
             } finally {
                 try {
                     output.close();

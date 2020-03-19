@@ -36,7 +36,7 @@ public class ConceptUtil {
         q.setParameter("version", version);
         q.setParameter("id", id);
         return (sdmx.gateway.entities.Concept)q.getSingleResult();
-        }catch(Exception e) { 
+        }catch(Exception e) { e.printStackTrace();
             return null; }
     }
     public static Concept createDatabaseConcept(EntityManager em, Conceptscheme cs, ConceptType c) {

@@ -37,6 +37,7 @@ import sdmx.commonreferences.Version;
 import sdmx.exception.ParseException;
 import sdmx.gateway.SdmxGatewayApplication;
 import sdmx.gateway.entities.Codelist;
+import sdmx.gateway.entities.Conceptscheme;
 import sdmx.gateway.entities.Dataflow;
 import sdmx.gateway.entities.Datastructure;
 import sdmx.gateway.util.AnnotationsUtil;
@@ -202,44 +203,35 @@ public class DatabaseRegistry implements Registry {
             sdmx.gateway.entities.Conceptscheme conceptscheme = ConceptSchemeUtil.findDatabaseConceptScheme(update, c.getAgencyID().toString(), c.getId().toString(), c.getVersion().toString());
             if (conceptscheme != null) {
                 alreadyExists = true;
-                System.out.println("ConceptScheme: " + c.getAgencyID().toString() + ":" + c.getId().toString() + ":" + c.getVersion().toString() + " already exists");
-                continue;
             }
-            sdmx.gateway.entities.Concept cdb = null;
-            for (int j = 0; j < c.size(); j++) {
-                cdb = ConceptUtil.findDatabaseConcept(update, c.getAgencyID().toString(), c.getId().toString(), c.getVersion().toString(), c.getItem(j).getId().toString());
-                if (cdb != null) {
-                    alreadyExists = true;
-                    Iterator<ConceptType> it = clist.iterator();
-                    while (it.hasNext()) {
-                        ConceptType ct = it.next();
-                        if (ct.getId().equals(cdb.getConceptPK().getId())) {
-                            it.remove();
-                        }
+            if (alreadyExists) {
+                List<sdmx.structure.concept.ConceptType> addList = new ArrayList<>();
+                sdmx.gateway.entities.Concept cdb = null;
+                for (int j = 0; j < c.size(); j++) {
+                    cdb = ConceptUtil.findDatabaseConcept(update, c.getAgencyID().toString(), c.getId().toString(), c.getVersion().toString(), c.getItem(j).getId().toString());
+                    if (cdb == null) {
+                        addList.add((ConceptType) c.getItem(j));
                     }
                 }
-            }
-
-            if (alreadyExists) {
-                return;
-                /*
                 try {
                     update.getTransaction().begin();
                     sdmx.gateway.entities.Conceptscheme cs = ConceptSchemeUtil.findDatabaseConceptScheme(update, c.getAgencyID().toString(), c.getId().toString(), c.getVersion().toString());
                     // What isn't already in the database
-                    for (ConceptType ct : clist) {
-                        sdmx.gateway.entities.Concept con = ConceptUtil.createDatabaseConcept(update, cs, ct);
-                        cs.getConceptList().add(con);
-                        con.setConceptscheme(cs);
+                    for (ConceptType ct : addList) {
+                        sdmx.gateway.entities.Concept concept = ConceptUtil.createDatabaseConcept(update, conceptscheme, ct);
+                        conceptscheme.getConceptList().add(concept);
+                        concept.setConceptscheme(conceptscheme);
                     }
-                    
                     update.merge(cs);
                     update.getTransaction().commit();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 } finally {
+                    if (update.getTransaction().isActive()) {
+                        update.getTransaction().rollback();
+                    }
                     update.clear();
-                }*/
+                }
             } else {
                 try {
                     update.getTransaction().begin();
@@ -248,8 +240,10 @@ public class DatabaseRegistry implements Registry {
                     update.getTransaction().commit();
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                    update.getTransaction().rollback();
                 } finally {
+                    if (update.getTransaction().isActive()) {
+                        update.getTransaction().rollback();
+                    }
                     update.clear();
                 }
             }
@@ -348,18 +342,26 @@ public class DatabaseRegistry implements Registry {
 
     @Override
     public ItemSchemeType find(ItemSchemeReferenceBase ref) {
+        CodelistType ct2 = find(ref.asCodelistReference());
+        if (ct2 != null) {
+            return ct2;
+        }
         ConceptSchemeType ct = find(ref.asConceptSchemeReference());
         if (ct != null) {
             return ct;
         }
-        CodelistType ct2 = find(ref.asCodelistReference());
-        return ct2;
+        return null;
     }
 
     @Override
     public ConceptType find(ConceptReference ref) {
-        ConceptSchemeType cs = this.find(ref.toConceptSchemeReference());
-        return cs.findConcept(ref.getId());
+        Conceptscheme cs = ConceptSchemeUtil.findDatabaseConceptScheme(query, ref.getAgencyId().toString(), ref.getMaintainableParentId().toString(), ref.getVersion().toString());
+        for (int i = 0; i < cs.getConceptList().size(); i++) {
+            if (cs.getConceptList().get(i).getConceptPK().getConceptid().equals(ref.getId().toString())) {
+                return ConceptUtil.toSDMXConcept(cs.getConceptList().get(i));
+            }
+        }
+        return null;
     }
 
     @Override
@@ -368,6 +370,7 @@ public class DatabaseRegistry implements Registry {
         if (css.size() > 0) {
             return css.get(0);
         } else {
+            System.out.println("Cant find concept scheme:" + ref.getMaintainableParentId().toString());
             return null;
         }
     }
@@ -400,7 +403,6 @@ public class DatabaseRegistry implements Registry {
 
     @Override
     public List<CodelistType> search(CodelistReference ref) {
-        ref.dump();
         return CodelistUtil.toSDMXCodelist(CodelistUtil.searchCodelist(this.query, ref.getAgencyId().toString(), ref.getMaintainableParentId().toString(), ref.getVersion().toString()));
     }
 

@@ -18,7 +18,7 @@ import sdmx.commonreferences.Version;
 public class ConceptReferenceUtil {
 
     public static sdmx.gateway.entities.Conceptreference toDatabaseConceptreference(EntityManager em, ConceptReference conceptIdentity) {
-        sdmx.gateway.entities.Conceptreference ref = new sdmx.gateway.entities.Conceptreference();
+         sdmx.gateway.entities.Conceptreference ref = new sdmx.gateway.entities.Conceptreference();
          ref.setAgencyid(conceptIdentity.getAgencyId().toString());
          ref.setConceptid(conceptIdentity.getId().toString());
          ref.setId(conceptIdentity.getMaintainableParentId().toString());
@@ -28,7 +28,8 @@ public class ConceptReferenceUtil {
 
     }
     public static ConceptReference toSDMXReference(sdmx.gateway.entities.Conceptreference con) {
-        return ConceptReference.create(new NestedNCNameID(con.getAgencyid()), new IDType(con.getId()), new Version(con.getVersion()), new IDType(con.getConceptid()));
+        ConceptReference ref = ConceptReference.create(new NestedNCNameID(con.getAgencyid()), new IDType(con.getId()), new Version(con.getVersion()), new IDType(con.getConceptid()));
+        return ref;
     }
 
 }

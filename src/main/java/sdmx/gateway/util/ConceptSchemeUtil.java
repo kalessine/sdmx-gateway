@@ -47,41 +47,42 @@ public class ConceptSchemeUtil {
         q.setParameter("id", id);
         q.setParameter("version", version);
         return (sdmx.gateway.entities.Conceptscheme)q.getSingleResult();
-        }catch(Exception ex) {ex.printStackTrace();return null; }
+        }catch(Exception ex) {return null; }
     }
     public static List<sdmx.gateway.entities.Conceptscheme> searchConceptScheme(EntityManager em, String agency, String id, String version) {
+        
         if ("*".equals(version) && "all".equals(id) && "all".equals(agency)) {
-            Query q = em.createQuery("select c from ConceptScheme c");
+            Query q = em.createQuery("select c from Conceptscheme c");
             return (List<sdmx.gateway.entities.Conceptscheme>) q.getResultList();
         } else if ("all".equals(id) && "all".equals(agency)) {
-            Query q = em.createQuery("select c from ConceptScheme c where c.conceptschemePK.version=:version");
+            Query q = em.createQuery("select c from Conceptscheme c where c.conceptschemePK.version=:version");
             q.setParameter("version", version);
             return (List<sdmx.gateway.entities.Conceptscheme>) q.getResultList();
         } else if ("*".equals(version) && "all".equals(id)) {
-            Query q = em.createQuery("select c from ConceptScheme c where c.conceptschemePK.agencyid=:agency");
+            Query q = em.createQuery("select c from Conceptscheme c where c.conceptschemePK.agencyid=:agency");
             q.setParameter("agency", agency);
             return (List<sdmx.gateway.entities.Conceptscheme>) q.getResultList();
         } else if ("*".equals(version) && "all".equals(agency)) {
-            Query q = em.createQuery("select c from ConceptScheme c where c.conceptschemePK.id=:id");
+            Query q = em.createQuery("select c from Conceptscheme c where c.conceptschemePK.id=:id");
             q.setParameter("id", id);
             return (List<sdmx.gateway.entities.Conceptscheme>) q.getResultList();
         } else if ("*".equals(version)) {
-            Query q = em.createQuery("select c from ConceptScheme c where c.conceptschemePK.agencyid=:agency and c.conceptschemePK.id=:id");
+            Query q = em.createQuery("select c from Conceptscheme c where c.conceptschemePK.agencyid=:agency and c.conceptschemePK.id=:id");
             q.setParameter("agency", agency);
             q.setParameter("id", id);
             return (List<sdmx.gateway.entities.Conceptscheme>) q.getResultList();
         } else if ("all".equals(id)) {
-            Query q = em.createQuery("select c from ConceptScheme c where c.conceptschemePK.agencyid=:agency and c.conceptschemePK.version=:version");
+            Query q = em.createQuery("select c from Conceptscheme c where c.conceptschemePK.agencyid=:agency and c.conceptschemePK.version=:version");
             q.setParameter("agency", agency);
             q.setParameter("version", version);
             return (List<sdmx.gateway.entities.Conceptscheme>) q.getResultList();
         } else if ("all".equals(agency)) {
-            Query q = em.createQuery("select c from ConceptScheme c where c.conceptschemePK.id==:id and c.conceptschemePK.version=:version");
+            Query q = em.createQuery("select c from Conceptscheme c where c.conceptschemePK.id==:id and c.conceptschemePK.version=:version");
             q.setParameter("id", id);
             q.setParameter("version", version);
             return (List<sdmx.gateway.entities.Conceptscheme>) q.getResultList();
         } else {
-            Query q = em.createQuery("select c from ConceptScheme c where c.conceptschemePK.agencyid=:agency and c.conceptschemePK.id=:id and c.conceptschemePK.version=:version");
+            Query q = em.createQuery("select c from Conceptscheme c where c.conceptschemePK.agencyid=:agency and c.conceptschemePK.id=:id and c.conceptschemePK.version=:version");
             q.setParameter("agency", agency);
             q.setParameter("id", id);
             q.setParameter("version", version);

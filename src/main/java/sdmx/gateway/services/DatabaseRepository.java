@@ -63,11 +63,16 @@ public class DatabaseRepository implements Repository {
     PoolingDataSource<Connection> pool;
 
     public DatabaseRepository() {
-        ConnectionFactory connectionFactory = new DriverManagerConnectionFactory("jdbc:mysql://localhost:3306/sdmxgateway", "root", "pooky213");
-        PoolableConnectionFactory poolableConnectionFactory;
-        poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, null);
-        GenericObjectPool connectionPool = new GenericObjectPool(poolableConnectionFactory);
-        pool = new PoolingDataSource(connectionPool);
+        try {
+            Class.forName("org.postgresql.Driver");
+            ConnectionFactory connectionFactory = new DriverManagerConnectionFactory("jdbc:postgresql://localhost:5432/repository", "user", "resu");
+            PoolableConnectionFactory poolableConnectionFactory;
+            poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, null);
+            GenericObjectPool connectionPool = new GenericObjectPool(poolableConnectionFactory);
+            pool = new PoolingDataSource(connectionPool);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(DatabaseRepository.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public Connection getConnection() throws SQLException {
@@ -81,10 +86,10 @@ public class DatabaseRepository implements Repository {
     }
 
     public void createDataflow(DataStructureType struct, String id) throws SQLException {
-        String create = "create table if not exists `flow_" + id + "` (";
+        String create = "create table if not exists \"flow_" + id + "\" (";
         for (int i = 0; i < struct.getDataStructureComponents().getDimensionList().size(); i++) {
             DimensionType dim = struct.getDataStructureComponents().getDimensionList().getDimension(i);
-            create += "`" + dim.getId().toString() + "` VARCHAR(50)";
+            create += "\"" + dim.getId().toString() + "\" varchar(300)";
             if (struct.getDataStructureComponents().getDimensionList().size() - 1 > i) {
                 create += ",";
             }
@@ -92,21 +97,21 @@ public class DatabaseRepository implements Repository {
         if (struct.getDataStructureComponents().getDimensionList().getTimeDimension() != null) {
             TimeDimensionType dim = struct.getDataStructureComponents().getDimensionList().getTimeDimension();
             create += ",";
-            create += "`" + dim.getId().toString() + "` VARCHAR(50)";
+            create += "\"" + dim.getId().toString() + "\" varchar(300)";
         }
         if (struct.getDataStructureComponents().getDimensionList().getMeasureDimension() != null) {
             MeasureDimensionType dim = struct.getDataStructureComponents().getDimensionList().getMeasureDimension();
             create += ",";
-            create += "`" + dim.getId().toString() + "` VARCHAR(50)";
+            create += "\"" + dim.getId().toString() + "\" varchar(300)";
         }
         for (int i = 0; i < struct.getDataStructureComponents().getAttributeList().size(); i++) {
             create += ",";
             AttributeType att = struct.getDataStructureComponents().getAttributeList().getAttribute(i);
-            create += "`" + att.getId().toString() + "` VARCHAR(50)";
+            create += "\"" + att.getId().toString() + "\" varchar(300)";
         }
         create += ",";
         PrimaryMeasure pm = struct.getDataStructureComponents().getMeasureList().getPrimaryMeasure();
-        create += "`" + pm.getId().toString() + "` VARCHAR(50)";
+        create += "\"" + pm.getId().toString() + "\" double precision";
         create += ");";
         Connection con = pool.getConnection();
         System.out.println(create);
@@ -131,7 +136,7 @@ public class DatabaseRepository implements Repository {
         try {
             List<FlatObs> result = new ArrayList<FlatObs>();
             Connection con = pool.getConnection();
-            String select = "select * from `flow_" + query.getFlowRef() + "`";
+            String select = "select * from \"flow_" + query.getFlowRef() + "\"";
             int count = 0;
             if (query.getQuerySize() > 0) {
                 select += " where ";
@@ -197,7 +202,7 @@ public class DatabaseRepository implements Repository {
         try {
             List<FlatObs> result = new ArrayList<FlatObs>();
             Connection con = pool.getConnection();
-            String select = "select * from `flow_" + query.getFlowRef() + "`";
+            String select = "select * from \"flow_" + query.getFlowRef() + "\"";
             int count = 0;
             if (query.getQuerySize() > 0) {
                 select += " where ";
@@ -257,12 +262,12 @@ public class DatabaseRepository implements Repository {
 
     public void insertDataflow(DataSet ds, String flow) throws SQLException {
         Connection con = pool.getConnection();
-        String insert = "insert into `flow_" + flow + "`";
+        String insert = "insert into \"flow_" + flow + "\"";
         ColumnMapper mapper = ds.getColumnMapper();
         String values = "(";
         String params = "(";
         for (int i = 0; i < mapper.size(); i++) {
-            values += "`" + mapper.getColumnName(i) + "`";
+            values += "\"" + mapper.getColumnName(i) + "\"";
             params += "?";
             if (mapper.size() - 1 > i) {
                 values += ",";
@@ -275,7 +280,11 @@ public class DatabaseRepository implements Repository {
         PreparedStatement pst = con.prepareStatement(insert);
         for (int i = 0; i < ds.size(); i++) {
             for (int j = 0; j < mapper.size(); j++) {
-                pst.setString(j + 1, ds.getFlatObs(i).getValue(j));
+                if (mapper.getColumnName(j) == "OBS_VALUE") {
+                    pst.setDouble(j + 1, Double.parseDouble(ds.getFlatObs(i).getValue(j)));
+                } else {
+                    pst.setString(j + 1, ds.getFlatObs(i).getValue(j));
+                }
             }
             pst.addBatch();
         }
@@ -287,7 +296,7 @@ public class DatabaseRepository implements Repository {
         Connection con = null;
         try {
             con = pool.getConnection();
-            String select = "show tables like \'flow_" + flow + "\';";
+            String select = "SELECT * FROM pg_catalog.pg_tables WHERE tablename = 'flow_" + flow + "';";
             System.out.println(select);
             PreparedStatement pst = con.prepareStatement(select);
             ResultSet rs = pst.executeQuery();

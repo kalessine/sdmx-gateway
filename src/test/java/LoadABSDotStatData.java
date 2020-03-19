@@ -67,7 +67,7 @@ public class LoadABSDotStatData {
     @Test
     public void loadALC() throws MalformedURLException {
         SdmxIO.setDumpQuery(true);
-        DataProvider dp = ServiceList.listDataProviders().get(6);
+        DataProvider dp = ServiceList.listDataProviders().get(0);
         Queryable queryable = dp.getQueryable();
         Registry reg = queryable.getRegistry();
         Repository rep = queryable.getRepository();
@@ -77,9 +77,9 @@ public class LoadABSDotStatData {
         start.set(Calendar.YEAR, 1000);
         start.set(Calendar.MONTH, 1);
         start.set(Calendar.DATE, 1);
-        end.set(Calendar.YEAR, 2016);
-        end.set(Calendar.MONTH, 1);
-        end.set(Calendar.DATE, 1);
+        end.set(Calendar.YEAR, 2020);
+        end.set(Calendar.MONTH, 3);
+        end.set(Calendar.DATE, 19);
         for (int i = 0; i < dfs.size(); i++) {
             try {
                 Thread.sleep(2000);
@@ -87,13 +87,15 @@ public class LoadABSDotStatData {
             }
             DataflowType flow = dfs.get(i);
             DataStructureType struct = reg.find(flow.getStructure());
-            if (!dd.hasDataflow(flow.getId().toString())) {
+            boolean hasDataflow = dd.hasDataflow(flow.getId().toString());
+            if (hasDataflow) {
+                continue;
+            } else
                 try {
-                    System.out.println("Create Dataflow " + flow.getId().toString());
-                    dd.createDataflow(struct, flow.getId().toString());
-                } catch (SQLException ex) {
-                    Logger.getLogger(LoadABSDotStatData.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                System.out.println("Create Dataflow " + flow.getId().toString());
+                dd.createDataflow(struct, flow.getId().toString());
+            } catch (SQLException ex) {
+                Logger.getLogger(LoadABSDotStatData.class.getName()).log(Level.SEVERE, null, ex);
             }
             ItemSchemeType cl = reg.find(struct.getDataStructureComponents().getDimensionList().getDimension(0).getLocalRepresentation().getEnumeration());
             ItemSchemeType cl2 = reg.find(struct.getDataStructureComponents().getDimensionList().getDimension(1).getLocalRepresentation().getEnumeration());
@@ -115,8 +117,10 @@ public class LoadABSDotStatData {
                         }
                     }
                     q.setProviderRef(flow.getAgencyID().toString());
-                    q.getQueryTime().setStartTime(start.getTime());
-                    q.getQueryTime().setEndTime(end.getTime());
+                    if (q.getQueryTime() != null) {
+                        q.getQueryTime().setStartTime(start.getTime());
+                        q.getQueryTime().setEndTime(end.getTime());
+                    }
                     ParseParams params = new ParseParams();
                     params.setRegistry(reg);
                     DataMessage dm = null;

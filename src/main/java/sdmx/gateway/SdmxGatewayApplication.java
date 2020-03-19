@@ -15,6 +15,7 @@ import sdmx.Repository;
 import sdmx.SdmxIO;
 //import sdmx.gateway.services.DatabaseRepository;
 import sdmx.gateway.services.DatabaseRegistry;
+import sdmx.gateway.services.DatabaseRepository;
 import sdmx.net.list.DataProvider;
 import sdmx.structure.dataflow.DataflowType;
 
@@ -34,10 +35,11 @@ public class SdmxGatewayApplication {
         @Override
         public Repository getRepository() {
             //return rep;
-            return null;
+            return repository;
         }
     };
     private Registry registry = new DatabaseRegistry();
+    private Repository repository = new DatabaseRepository();
     //private Repository rep = (Repository) new DatabaseRepository();
 
     public SdmxGatewayApplication() {
@@ -58,5 +60,8 @@ public class SdmxGatewayApplication {
 
     public Registry getRegistry() {
         return this.registry;
+    }
+    public Repository getRepository() {
+        return this.repository;
     }
 }

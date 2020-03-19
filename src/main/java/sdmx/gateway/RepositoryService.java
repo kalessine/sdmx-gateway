@@ -26,6 +26,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.Suspended;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -85,7 +87,8 @@ public class RepositoryService {
     @GET
     @Path("/data/{flowRef}/{query}/{providerRef}")
     @Produces({"application/vnd.sdmx.data+json;version=1.0.0-wd"})
-    public Response getJSONData(@DefaultValue("2000-01-01") @QueryParam("startPeriod") String startPeriod,
+    public void getJSONData(@Suspended AsyncResponse response,
+            @DefaultValue("2000-01-01") @QueryParam("startPeriod") String startPeriod,
             @DefaultValue("2010-01-01") @QueryParam("endPeriod") String endPeriod,
             @DefaultValue("") @QueryParam("updatedAfter") String updatedAfter,
             @QueryParam("firstNObservations") int firstNObservations,
@@ -126,25 +129,26 @@ public class RepositoryService {
         } catch (java.text.ParseException ex) {
             Logger.getLogger(RepositoryService.class.getName()).log(Level.SEVERE, null, ex);
         }
-        final ParseParams params = new ParseParams();
-        params.setRegistry(reg);
-        params.setLocale(Locale.forLanguageTag(request.getHeader("Accept-Language")));
-        StreamingOutput stream = new StreamingOutput() {
-            @Override
-            public void write(OutputStream os) throws IOException,
-                    WebApplicationException {
+
+        StreamingOutput streamingOutput = output -> {
+            final ParseParams params = new ParseParams();
+            params.setRegistry(reg);
+            params.setLocale(Locale.forLanguageTag(request.getHeader("Accept-Language")));
+            try {
+                rep.query(q, SdmxIO.openForStreamWriting("application/vnd.sdmx.data+json;version=1.0.0-wd", output, params));
+            } catch (Exception e) {
+            } finally {
                 try {
-                    rep.query(q, SdmxIO.openForStreamWriting("application/vnd.sdmx.data+json;version=1.0.0-wd", os,params));
-                } catch (ParseException ex) {
-                    Logger.getLogger(RepositoryService.class.getName()).log(Level.SEVERE, null, ex);
+                    output.close();
+                } catch (IOException ex) {
                     ex.printStackTrace();
+                    Logger.getLogger(RegistryService.class.getName())
+                            .log(Level.SEVERE, null, ex);
                 }
-                os.flush();
-                os.close();
             }
         };
         MediaType m = new MediaType("application", "application/vnd.sdmx.data+json;version=1.0.0-wd");
-        return Response.ok(stream).type(m).build();
+        response.resume(Response.ok(streamingOutput).type(m).build());
     }
 
     /**
@@ -159,7 +163,8 @@ public class RepositoryService {
     @GET
     @Path("/data/{flowRef}/{query}/{providerRef}")
     @Produces({"application/vnd.sdmx.genericdata+xml;version=2.1"})
-    public Response getGenericData(@DefaultValue("2000-01-01") @QueryParam("startPeriod") String startPeriod,
+    public void getGenericData(@Suspended AsyncResponse response,
+            @DefaultValue("2000-01-01") @QueryParam("startPeriod") String startPeriod,
             @DefaultValue("2010-01-01") @QueryParam("endPeriod") String endPeriod,
             @DefaultValue("") @QueryParam("updatedAfter") String updatedAfter,
             @QueryParam("firstNObservations") int firstNObservations,
@@ -200,25 +205,25 @@ public class RepositoryService {
         } catch (java.text.ParseException ex) {
             Logger.getLogger(RepositoryService.class.getName()).log(Level.SEVERE, null, ex);
         }
-        final ParseParams params = new ParseParams();
-        params.setRegistry(reg);
-        params.setLocale(Locale.forLanguageTag(request.getHeader("Accept-Language")));
-        StreamingOutput stream = new StreamingOutput() {
-            @Override
-            public void write(OutputStream os) throws IOException,
-                    WebApplicationException {
+        StreamingOutput streamingOutput = output -> {
+            final ParseParams params = new ParseParams();
+            params.setRegistry(reg);
+            params.setLocale(Locale.forLanguageTag(request.getHeader("Accept-Language")));
+            try {
+                rep.query(q, SdmxIO.openForStreamWriting("application/vnd.sdmx.genericdata+xml;version=2.1", output, params));
+            } catch (Exception e) {
+            } finally {
                 try {
-                    rep.query(q, SdmxIO.openForStreamWriting("application/vnd.sdmx.genericdata+xml;version=2.1", os, params));
-                } catch (ParseException ex) {
-                    Logger.getLogger(RepositoryService.class.getName()).log(Level.SEVERE, null, ex);
+                    output.close();
+                } catch (IOException ex) {
                     ex.printStackTrace();
+                    Logger.getLogger(RegistryService.class.getName())
+                            .log(Level.SEVERE, null, ex);
                 }
-                os.flush();
-                os.close();
             }
         };
-        MediaType m = new MediaType("application", "vnd.sdmx.genericdata+xml;version=2.1");
-        return Response.ok(stream).type(m).build();
+        MediaType m = new MediaType("application", "application/vnd.sdmx.genericdata+xml;version=2.1");
+        response.resume(Response.ok(streamingOutput).type(m).build());
     }
 
     /**
@@ -233,7 +238,8 @@ public class RepositoryService {
     @GET
     @Path("/data/{flowRef}/{query}/{providerRef}")
     @Produces({"application/vnd.sdmx.structurespecificdata+xml;version=2.1"})
-    public Response getSructSpecData(@DefaultValue("2000-01-01") @QueryParam("startPeriod") String startPeriod,
+    public void getSructSpecData(@Suspended AsyncResponse response,
+            @DefaultValue("2000-01-01") @QueryParam("startPeriod") String startPeriod,
             @DefaultValue("2010-01-01") @QueryParam("endPeriod") String endPeriod,
             @DefaultValue("") @QueryParam("updatedAfter") String updatedAfter,
             @QueryParam("firstNObservations") int firstNObservations,
@@ -274,25 +280,25 @@ public class RepositoryService {
         } catch (java.text.ParseException ex) {
             Logger.getLogger(RepositoryService.class.getName()).log(Level.SEVERE, null, ex);
         }
-        final ParseParams params = new ParseParams();
-        params.setRegistry(reg);
-        params.setLocale(Locale.forLanguageTag(request.getHeader("Accept-Language")));
-        StreamingOutput stream = new StreamingOutput() {
-            @Override
-            public void write(OutputStream os) throws IOException,
-                    WebApplicationException {
+        StreamingOutput streamingOutput = output -> {
+            final ParseParams params = new ParseParams();
+            params.setRegistry(reg);
+            params.setLocale(Locale.forLanguageTag(request.getHeader("Accept-Language")));
+            try {
+                rep.query(q, SdmxIO.openForStreamWriting("application/vnd.sdmx.structurespecificdata+xml;version=2.1", output, params));
+            } catch (Exception e) {
+            } finally {
                 try {
-                    rep.query(q, SdmxIO.openForStreamWriting("application/vnd.sdmx.structurespecificdata+xml;version=2.1", os, params));
-                } catch (ParseException ex) {
-                    Logger.getLogger(RepositoryService.class.getName()).log(Level.SEVERE, null, ex);
+                    output.close();
+                } catch (IOException ex) {
                     ex.printStackTrace();
+                    Logger.getLogger(RegistryService.class.getName())
+                            .log(Level.SEVERE, null, ex);
                 }
-                os.flush();
-                os.close();
             }
         };
-        MediaType m = new MediaType("application", "vnd.sdmx.structurespecificdata+xml;version=2.1");
-        return Response.ok(stream).type(m).build();
+        MediaType m = new MediaType("application", "application/vnd.sdmx.structurespecificdata+xml;version=2.1");
+        response.resume(Response.ok(streamingOutput).type(m).build());
     }
 
     /**
@@ -307,7 +313,8 @@ public class RepositoryService {
     @GET
     @Path("/data/{flowRef}/{query}/{providerRef}")
     @Produces({"application/json"})
-    public Response getJSONStatData(@DefaultValue("2000-01-01") @QueryParam("startPeriod") String startPeriod,
+    public void getJSONStatData(@Suspended AsyncResponse response,
+            @DefaultValue("2000-01-01") @QueryParam("startPeriod") String startPeriod,
             @DefaultValue("2010-01-01") @QueryParam("endPeriod") String endPeriod,
             @DefaultValue("") @QueryParam("updatedAfter") String updatedAfter,
             @QueryParam("firstNObservations") int firstNObservations,
@@ -324,9 +331,6 @@ public class RepositoryService {
         final Repository rep = quer.getRepository();
         DataflowReference ref = DataflowReference.create(new NestedNCNameID(providerRef), new IDType(flowRef), Version.ONE);
         DataflowType flow = reg.find(ref);
-        ref.dump();
-        System.out.println("Flow" + flow);
-        System.out.println("Ref=" + reg);
         final Query q = new RegistryQuery(reg.find(flow.getStructure()), reg, flowRef);
         q.setProviderRef(providerRef);
         q.setFlowRef(flowRef);
@@ -351,37 +355,24 @@ public class RepositoryService {
         } catch (java.text.ParseException ex) {
             Logger.getLogger(RepositoryService.class.getName()).log(Level.SEVERE, null, ex);
         }
-        final ParseParams params = new ParseParams();
-        params.setRegistry(reg);
-        params.setLocale(Locale.forLanguageTag(request.getHeader("Accept-Language")));
-        try {
-            final DataMessage dm = rep.query(q);
-            StreamingOutput stream = new StreamingOutput() {
-                @Override
-                public void write(OutputStream os) throws IOException,
-                        WebApplicationException {
-                    SdmxIO.writeDataMessage(params, "application/json", dm, os);
-                    os.flush();
-                    os.close();
+        StreamingOutput streamingOutput = output -> {
+            final ParseParams params = new ParseParams();
+            params.setRegistry(reg);
+            params.setLocale(Locale.forLanguageTag(request.getHeader("Accept-Language")));
+            try {
+                rep.query(q, SdmxIO.openForStreamWriting("application/vnd.sdmx.structurespecificdata+xml;version=2.1", output, params));
+            } catch (Exception e) {
+            } finally {
+                try {
+                    output.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    Logger.getLogger(RegistryService.class.getName())
+                            .log(Level.SEVERE, null, ex);
                 }
-            };
-            MediaType m = new MediaType("application", "application/json");
-            return Response.ok(stream).type(m).build();
-        } catch (ParseException ex) {
-            Logger.getLogger(RepositoryService.class.getName()).log(Level.SEVERE, null, ex);
-            return Response.serverError().build();
-        } catch (IOException ex) {
-            Logger.getLogger(RepositoryService.class.getName()).log(Level.SEVERE, null, ex);
-            return Response.serverError().build();
-        }
-    }
-
-    public Queryable getProviderQueryable(int i) {
-        Queryable q = providerMap.get(i);
-        if (q == null) {
-            q = DataProvider.getList().get(i - 1).getQueryable();
-            providerMap.put(i, q);
-        }
-        return q;
+            }
+        };
+        MediaType m = new MediaType("application", "application/vnd.sdmx.structurespecificdata+xml;version=2.1");
+        response.resume(Response.ok(streamingOutput).type(m).build());
     }
 }

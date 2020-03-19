@@ -39,7 +39,7 @@ import no.ssb.vtl.model.Component.Role;
 import no.ssb.vtl.model.DataPoint;
 import no.ssb.vtl.model.DataStructure;
 import no.ssb.vtl.model.DataStructure.Builder;
-import no.ssb.vtl.model.Ordering;
+import no.ssb.vtl.model.Order;
 import no.ssb.vtl.model.VTLObject;
 import sdmx.Queryable;
 import sdmx.Registry;

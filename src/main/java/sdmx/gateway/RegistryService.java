@@ -81,7 +81,6 @@ public class RegistryService {
             }
         } else if ("referencestubs".equals(detail)) {
             // codelists don't reference anything
-
         }
         CodelistsType codelists2 = new CodelistsType(codelists);
         StructuresType structures = new StructuresType();

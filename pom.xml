@@ -4,7 +4,7 @@
     <groupId>com.github.kalessine</groupId>
     <artifactId>sdmx-gateway</artifactId>
     <packaging>jar</packaging>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1</version>
     <name>sdmx-gateway</name>
     <description>experimental sdmx gateway</description>
     <url>http://github.com/kalessine/sdmx-gateway</url>
@@ -239,7 +239,8 @@
         <connection>scm:git:ssh://git@github.com/kalessine/sdmx-gateway.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/kalessine/sdmx-gateway.git</developerConnection>
         <url>http://github.com/kalessine/sdmx-gateway/tree/master</url>
-    </scm>
+      <tag>sdmx-gateway-0.1</tag>
+  </scm>
 
     <distributionManagement>
         <snapshotRepository>

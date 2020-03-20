@@ -4,7 +4,7 @@
     <groupId>com.github.kalessine</groupId>
     <artifactId>sdmx-gateway</artifactId>
     <packaging>jar</packaging>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1</version>
     <name>sdmx-gateway</name>
     <description>experimental sdmx gateway</description>
     <url>http://github.com/kalessine/sdmx-gateway</url>
@@ -80,9 +80,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>sdmx-sax</groupId>
+            <groupId>com.github.kalessine</groupId>
             <artifactId>sdmx-sax-parser</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>0.1</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.eclipse.persistence/eclipselink -->
         <dependency>
@@ -239,7 +239,7 @@
         <connection>scm:git:ssh://git@github.com/kalessine/sdmx-sax-parser.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/kalessine/sdmx-sax-parser.git</developerConnection>
         <url>http://github.com/kalessine/sdmx-sax-parser/tree/master</url>
-        <tag>sdmx-sax-parser-0.1</tag>
+        <tag>sdmx-gateway-0.1</tag>
     </scm>
 
     <distributionManagement>

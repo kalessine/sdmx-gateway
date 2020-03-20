@@ -236,10 +236,9 @@
         </plugins>
     </build>
     <scm>
-        <connection>scm:git:ssh://git@github.com/kalessine/sdmx-sax-parser.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/kalessine/sdmx-sax-parser.git</developerConnection>
-        <url>http://github.com/kalessine/sdmx-sax-parser/tree/master</url>
-        <tag>sdmx-gateway-0.1</tag>
+        <connection>scm:git:ssh://git@github.com/kalessine/sdmx-gateway.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/kalessine/sdmx-gateway.git</developerConnection>
+        <url>http://github.com/kalessine/sdmx-gateway/tree/master</url>
     </scm>
 
     <distributionManagement>
